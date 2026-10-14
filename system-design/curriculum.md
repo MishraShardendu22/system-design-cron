@@ -8,8 +8,8 @@ Statuses: **covered** means a lesson exists; **eligible** means all declared pre
 |---|---|---|---|---|
 | SD-001 | System design fundamentals and architectural reasoning | None | Define boundaries, reason from constraints, identify quality attributes, and make tradeoffs explicit. | covered |
 | SD-002 | Requirements discovery and specification | SD-001 | Separate functional and non-functional requirements, constraints, assumptions, and out-of-scope behavior. | covered |
-| SD-003 | Capacity estimation and workload modeling | SD-002 | Estimate request rates, storage growth, bandwidth, concurrency, and peak ratios. | eligible |
-| SD-004 | Latency budgets and performance objectives | SD-002, SD-003 | Decompose end-to-end latency and reason about percentiles, queueing, and budgets. | planned |
+| SD-003 | Capacity estimation and workload modeling | SD-002 | Estimate request rates, storage growth, bandwidth, concurrency, and peak ratios. | covered |
+| SD-004 | Latency budgets and performance objectives | SD-002, SD-003 | Decompose end-to-end latency and reason about percentiles, queueing, and budgets. | eligible |
 | SD-005 | API design, contracts, and versioning | SD-002 | Define semantics, idempotency, pagination, errors, compatibility, and evolution. | eligible |
 | SD-006 | Domain boundaries and data ownership | SD-002, SD-005 | Assign ownership, define invariants, and identify service boundaries. | planned |
 | SD-007 | Data modeling and access patterns | SD-003, SD-006 | Model entities, lifecycle, invariants, and query-driven schemas. | planned |
