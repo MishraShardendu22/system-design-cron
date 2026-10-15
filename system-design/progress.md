@@ -2,19 +2,19 @@
 
 ## Current state
 
-- **Current day:** 3
+- **Current day:** 4
 - **Progression level:** Level 1, Foundations and architectural reasoning
-- **Current concept:** SD-003, Capacity estimation and workload modeling
+- **Current concept:** SD-004, Latency budgets and performance objectives
 - **Lesson status:** Delivered and persisted on `main`
 - **Mini exercise status:** Pending learner submission
 - **Substantial exercise status:** Pending learner submission
-- **Completed lessons:** Day 1, SD-001; Day 2, SD-002; Day 3, SD-003
-- **Concepts covered:** SD-001, SD-002, SD-003
+- **Completed lessons:** Day 1, SD-001; Day 2, SD-002; Day 3, SD-003; Day 4, SD-004
+- **Concepts covered:** SD-001, SD-002, SD-003, SD-004
 - **Unresolved learning gaps:** None confirmed. No exercise submissions have been reviewed, so mastery has not been assessed.
-- **Next recommended concept:** SD-004, Latency budgets and performance objectives
-- **Prerequisites for next concept:** Satisfied after Day 3 is covered. SD-002 and SD-003 are both covered.
-- **Other currently eligible concept:** SD-005, API design, contracts, and versioning. SD-004 is selected because it appears first in curriculum order and builds directly on workload estimates.
-- **Repository status:** Day 3 lesson and curriculum status are persisted on `main`. This progress update is committed separately through the GitHub contents API. Final readback verification is performed after the update.
+- **Next recommended concept:** SD-005, API design, contracts, and versioning
+- **Prerequisites for next concept:** Satisfied. SD-005 requires SD-002, which is covered.
+- **Other currently eligible concept:** SD-005 only, based on the current dependency graph.
+- **Repository status:** Day 4 lesson is persisted on `main`. Curriculum and progress synchronization are pending verification.
 
 ## Lesson history
 
@@ -23,6 +23,7 @@
 | 1 | SD-001 | System design fundamentals and architectural reasoning | Level 1 | Delivered | Pending | Pending |
 | 2 | SD-002 | Requirements discovery and specification | Level 1 | Delivered | Pending | Pending |
 | 3 | SD-003 | Capacity estimation and workload modeling | Level 1 | Delivered | Pending | Pending |
+| 4 | SD-004 | Latency budgets and performance objectives | Level 1 | Delivered | Pending | Pending |
 
 ## Tracking rules
 
