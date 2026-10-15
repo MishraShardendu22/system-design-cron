@@ -9,12 +9,13 @@
 - **Mini exercise status:** Pending learner submission
 - **Substantial exercise status:** Pending learner submission
 - **Completed lessons:** Day 1, SD-001; Day 2, SD-002; Day 3, SD-003; Day 4, SD-004
-- **Concepts covered:** SD-001, SD-002, SD-003, SD-004
-- **Unresolved learning gaps:** None confirmed. No exercise submissions have been reviewed, so mastery has not been assessed.
+- **Concepts covered by lessons:** SD-001, SD-002, SD-003, SD-004
+- **Unresolved learning gaps:** No learner exercises have been reviewed, so mastery is unassessed.
+- **Repository synchronization gap:** `curriculum.md` still marks SD-004 as eligible although the Day 4 lesson exists. The status update was blocked by repository write safeguards; do not treat curriculum/progress as fully synchronized.
 - **Next recommended concept:** SD-005, API design, contracts, and versioning
-- **Prerequisites for next concept:** Satisfied. SD-005 requires SD-002, which is covered.
-- **Other currently eligible concept:** SD-005 only, based on the current dependency graph.
-- **Repository status:** Day 4 lesson is persisted on `main`. Curriculum and progress synchronization are pending verification.
+- **Next concept prerequisites:** Satisfied. SD-005 requires SD-002, which is covered.
+- **Selection rule:** Do not repeat SD-004 because its lesson exists. Select SD-005 next, then reconcile the curriculum status when the write path permits.
+- **Repository status:** Lesson and progress are persisted on `main`; curriculum status correction remains incomplete.
 
 ## Lesson history
 
@@ -27,4 +28,4 @@
 
 ## Tracking rules
 
-A lesson is complete when its file is present and verified in the repository. Exercises remain pending until the learner submits work and it is reviewed. Do not infer mastery from lesson delivery. Record specific gaps only when supported by submitted work or observed reasoning. Select the next concept from curriculum.md after checking actual lesson files and prerequisites.
+A lesson is complete when its file is present and verified in the repository. Exercises remain pending until the learner submits work and it is reviewed. Do not infer mastery from lesson delivery. Record gaps only when supported by submissions or observed reasoning. Select the next concept from the curriculum and actual lesson history; never repeat a concept merely because a status field is stale.
