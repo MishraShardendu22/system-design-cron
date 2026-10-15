@@ -61,3 +61,8 @@ A hypothetical document API has a p99 server-side read objective of 200 ms at 10
 
 
 Additional verification note: stage limits are hypotheses, and end-to-end measurements remain authoritative.
+
+
+### 5. Low-Level Design (LLD)
+
+A valid plan contains a positive end-to-end duration, a response reserve smaller than that duration, and unique named stages. The sum of stage allocations must not exceed the duration remaining after the reserve. Reject invalid configuration at startup. Keep the plan immutable while requests use it concurrently.
