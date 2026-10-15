@@ -53,3 +53,8 @@ The dependency timeout is the smaller of its configured allocation and available
 At each boundary ask: how much time remains, which work is mandatory, and what evidence shows the objective is met?
 
 This model is not a substitute for measurements. Equal allocations are rarely optimal, and deadlines do not guarantee that remote systems stop after cancellation. Stage budgets are hypotheses to validate through tracing and representative load tests.
+
+
+### 4. Real-World Example
+
+A hypothetical document API has a p99 server-side read objective of 200 ms at 10,000 requests/second. These values are illustrative, not claims about an existing system. A candidate request path must reserve time for response serialization and egress. Stage allocations are hypotheses to validate with end-to-end traces and load tests, not proof that the overall percentile meets its target.
