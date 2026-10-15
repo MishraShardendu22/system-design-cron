@@ -17,7 +17,7 @@ Ingress establishes the deadline. The handler propagates context through queuein
 ### 7. Realistic Go Code
 \`\`\`go
 func StageContext(parent context.Context, limit, reserve time.Duration) (context.Context, context.CancelFunc, error) {
- if limit <= 0 || reserve < 0 { return nil,nil,errors.New("invalid budget") }
+ if parent == nil || limit <= 0 || reserve < 0 { return nil,nil,errors.New("invalid budget") }
  d, ok := parent.Deadline()
  if !ok { return nil,nil,errors.New("deadline required") }
  left := time.Until(d)-reserve
@@ -64,6 +64,6 @@ Design a Go policy with stage validation, one deadline, DB/HTTP propagation, bou
 - **Prerequisites:** SD-002 and SD-003 covered.
 - **Exercises:** Both pending. **Covered:** SD-001 through SD-004.
 - **Next:** SD-005, API design, contracts, and versioning.
-- **Status:** Verify lesson and trackers after persistence.
+- **Status:** Lesson and progress are persisted on main; curriculum status correction remains incomplete.
 ### Most Important Mental Model
 **Every synchronous stage spends from one finite request deadline; no downstream timeout creates more time.**
