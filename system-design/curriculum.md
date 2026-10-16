@@ -9,9 +9,9 @@ Statuses: **covered** means a lesson exists; **eligible** means all declared pre
 | SD-001 | System design fundamentals and architectural reasoning | None | Define boundaries, reason from constraints, identify quality attributes, and make tradeoffs explicit. | covered |
 | SD-002 | Requirements discovery and specification | SD-001 | Separate functional and non-functional requirements, constraints, assumptions, and out-of-scope behavior. | covered |
 | SD-003 | Capacity estimation and workload modeling | SD-002 | Estimate request rates, storage growth, bandwidth, concurrency, and peak ratios. | covered |
-| SD-004 | Latency budgets and performance objectives | SD-002, SD-003 | Decompose end-to-end latency and reason about percentiles, queueing, and budgets. | eligible |
-| SD-005 | API design, contracts, and versioning | SD-002 | Define semantics, idempotency, pagination, errors, compatibility, and evolution. | eligible |
-| SD-006 | Domain boundaries and data ownership | SD-002, SD-005 | Assign ownership, define invariants, and identify service boundaries. | planned |
+| SD-004 | Latency budgets and performance objectives | SD-002, SD-003 | Decompose end-to-end latency and reason about percentiles, queueing, and budgets. | covered |
+| SD-005 | API design, contracts, and versioning | SD-002 | Define semantics, idempotency, pagination, errors, compatibility, and evolution. | covered |
+| SD-006 | Domain boundaries and data ownership | SD-002, SD-005 | Assign ownership, define invariants, and identify service boundaries. | eligible |
 | SD-007 | Data modeling and access patterns | SD-003, SD-006 | Model entities, lifecycle, invariants, and query-driven schemas. | planned |
 
 ## Level 2: Storage and request-path mechanics
@@ -25,7 +25,7 @@ Statuses: **covered** means a lesson exists; **eligible** means all declared pre
 | SD-012 | Object storage and blob lifecycle | SD-007 | Design large-object storage, metadata, retention, and transfer flows. | planned |
 | SD-013 | Caching fundamentals and cache policies | SD-004, SD-007 | Choose keys, TTLs, eviction, and invalidation strategies. | planned |
 | SD-014 | Cache consistency, stampedes, and penetration | SD-013 | Handle stale data, hot keys, miss storms, and negative caching. | planned |
-| SD-015 | Proxies, reverse proxies, and API gateways | SD-005 | Place routing, TLS termination, policy enforcement, and transformation. | planned |
+| SD-015 | Proxies, reverse proxies, and API gateways | SD-005 | Place routing, TLS termination, policy enforcement, and transformation. | eligible |
 | SD-016 | Load balancing and health-based routing | SD-003, SD-015 | Compare routing algorithms, health checks, and overload behavior. | planned |
 | SD-017 | CDNs and edge delivery | SD-012, SD-013, SD-015 | Design cacheability, invalidation, origin shielding, and edge security. | planned |
 
