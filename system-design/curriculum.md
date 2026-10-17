@@ -11,8 +11,8 @@ Statuses: **covered** means a lesson exists; **eligible** means all declared pre
 | SD-003 | Capacity estimation and workload modeling | SD-002 | Estimate request rates, storage growth, bandwidth, concurrency, and peak ratios. | covered |
 | SD-004 | Latency budgets and performance objectives | SD-002, SD-003 | Decompose end-to-end latency and reason about percentiles, queueing, and budgets. | covered |
 | SD-005 | API design, contracts, and versioning | SD-002 | Define semantics, idempotency, pagination, errors, compatibility, and evolution. | covered |
-| SD-006 | Domain boundaries and data ownership | SD-002, SD-005 | Assign ownership, define invariants, and identify service boundaries. | eligible |
-| SD-007 | Data modeling and access patterns | SD-003, SD-006 | Model entities, lifecycle, invariants, and query-driven schemas. | planned |
+| SD-006 | Domain boundaries and data ownership | SD-002, SD-005 | Assign ownership, define invariants, and identify service boundaries. | covered |
+| SD-007 | Data modeling and access patterns | SD-003, SD-006 | Model entities, lifecycle, invariants, and query-driven schemas. | eligible |
 
 ## Level 2: Storage and request-path mechanics
 
