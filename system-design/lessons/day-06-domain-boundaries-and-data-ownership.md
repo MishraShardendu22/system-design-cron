@@ -194,14 +194,77 @@ OrderService cannot mutate stock directly. The mutex is process-local; productio
 
 ### 8. Example Usage
 
-Run in a Go module with go run . . Use Go tests and go test -race ./... to validate:
-- Same reservation ID and request returns the original result without a second decrement.
-- Same ID with a different SKU or quantity returns ErrReservationConflict.
-- Insufficient stock leaves stock unchanged.
-- Concurrent reservations for the last unit allow at most one success.
-- An ambiguous Inventory error is not interpreted as confirmed failure.
+Run the program in a Go module with go run . . Add the following as inventory_test.go in the same package, then run go test -race ./....
 
-These tests prove only in-process behavior. Production tests must exercise database transactions, unique constraints, multi-replica requests, and recovery after a lost response.
+~~~go
+package main
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"sync"
+	"testing"
+)
+
+func TestReservationIdempotencyAndConflict(t *testing.T) {
+	inv := NewInventory(map[string]int64{"sku": 2})
+	req := Request{ID: "r1", SKU: "sku", Quantity: 1}
+
+	first, err := inv.Reserve(context.Background(), req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	second, err := inv.Reserve(context.Background(), req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if first != second {
+		t.Fatalf("replay changed result: first=%+v second=%+v", first, second)
+	}
+	if got := inv.available["sku"]; got != 1 {
+		t.Fatalf("available=%d, want 1", got)
+	}
+
+	req.Quantity = 2
+	if _, err := inv.Reserve(context.Background(), req); !errors.Is(err, ErrReservationConflict) {
+		t.Fatalf("conflicting replay error=%v", err)
+	}
+}
+
+func TestConcurrentReservationsDoNotOversell(t *testing.T) {
+	inv := NewInventory(map[string]int64{"sku": 1})
+	var wg sync.WaitGroup
+	results := make(chan error, 2)
+
+	for i := 0; i < 2; i++ {
+		wg.Add(1)
+		go func(i int) {
+			defer wg.Done()
+			_, err := inv.Reserve(context.Background(), Request{
+				ID: fmt.Sprintf("r%d", i), SKU: "sku", Quantity: 1,
+			})
+			results <- err
+		}(i)
+	}
+	wg.Wait()
+	close(results)
+
+	successes := 0
+	for err := range results {
+		if err == nil {
+			successes++
+		} else if !errors.Is(err, ErrInsufficientStock) {
+			t.Fatalf("unexpected reservation error: %v", err)
+		}
+	}
+	if successes != 1 {
+		t.Fatalf("successful reservations=%d, want exactly 1", successes)
+	}
+}
+~~~
+
+The first test proves same-key replay and conflicting-payload rejection. The second checks the in-process concurrency invariant that one unit cannot be reserved twice. These tests do not prove multi-replica correctness; production tests must exercise database transactions, unique constraints, and recovery after a lost response.
 
 ### 9. Production Considerations
 
@@ -289,7 +352,7 @@ Design an ownership and extraction plan for a commerce monolith whose orders, in
 - **Exercise status:** Mini and substantial exercises pending; no learner submission reviewed.
 - **Concepts covered after update:** SD-001 through SD-006.
 - **Next concept:** SD-007, Data modeling and access patterns. SD-015 is also eligible, but SD-007 follows the Level 1 sequence.
-- **Repository update status:** Verify lesson, curriculum, and progress tracker by reading them back from main after commit.
+- **Repository update status:** Lesson, curriculum, and progress tracker were read back from main after commit; concept statuses and next-concept references were consistent.
 
 ### Most Important Mental Model
 
