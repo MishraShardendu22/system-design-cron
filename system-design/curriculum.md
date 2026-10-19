@@ -12,18 +12,18 @@ Statuses: **covered** means a lesson exists; **eligible** means all declared pre
 | SD-004 | Latency budgets and performance objectives | SD-002, SD-003 | Decompose end-to-end latency and reason about percentiles, queueing, and budgets. | covered |
 | SD-005 | API design, contracts, and versioning | SD-002 | Define semantics, idempotency, pagination, errors, compatibility, and evolution. | covered |
 | SD-006 | Domain boundaries and data ownership | SD-002, SD-005 | Assign ownership, define invariants, and identify service boundaries. | covered |
-| SD-007 | Data modeling and access patterns | SD-003, SD-006 | Model entities, lifecycle, invariants, and query-driven schemas. | eligible |
+| SD-007 | Data modeling and access patterns | SD-003, SD-006 | Model entities, lifecycle, invariants, and query-driven schemas. | covered |
 
 ## Level 2: Storage and request-path mechanics
 
 | ID | Concept | Prerequisites | Learning objectives | Status |
 |---|---|---|---|---|
-| SD-008 | Relational databases and transaction semantics | SD-007 | Apply constraints, isolation, transactions, and atomicity. | planned |
-| SD-009 | Index structures and query planning | SD-008 | Understand B-trees, selectivity, query plans, write amplification, and index tradeoffs. | planned |
+| SD-008 | Relational databases and transaction semantics | SD-007 | Apply constraints, isolation, transactions, and atomicity. | covered |
+| SD-009 | Index structures and query planning | SD-008 | Understand B-trees, selectivity, query plans, write amplification, and index tradeoffs. | eligible |
 | SD-010 | Query optimization and connection pooling | SD-008, SD-009 | Diagnose slow queries and bound database concurrency. | planned |
-| SD-011 | NoSQL data models and selection | SD-007, SD-003 | Compare key-value, document, wide-column, and graph models against access patterns. | planned |
-| SD-012 | Object storage and blob lifecycle | SD-007 | Design large-object storage, metadata, retention, and transfer flows. | planned |
-| SD-013 | Caching fundamentals and cache policies | SD-004, SD-007 | Choose keys, TTLs, eviction, and invalidation strategies. | planned |
+| SD-011 | NoSQL data models and selection | SD-007, SD-003 | Compare key-value, document, wide-column, and graph models against access patterns. | eligible |
+| SD-012 | Object storage and blob lifecycle | SD-007 | Design large-object storage, metadata, retention, and transfer flows. | eligible |
+| SD-013 | Caching fundamentals and cache policies | SD-004, SD-007 | Choose keys, TTLs, eviction, and invalidation strategies. | eligible |
 | SD-014 | Cache consistency, stampedes, and penetration | SD-013 | Handle stale data, hot keys, miss storms, and negative caching. | planned |
 | SD-015 | Proxies, reverse proxies, and API gateways | SD-005 | Place routing, TLS termination, policy enforcement, and transformation. | eligible |
 | SD-016 | Load balancing and health-based routing | SD-003, SD-015 | Compare routing algorithms, health checks, and overload behavior. | planned |
