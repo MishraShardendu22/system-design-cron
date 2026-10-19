@@ -16,7 +16,7 @@
 - **Next concept prerequisites:** Satisfied. SD-009 requires SD-008, covered by Day 8.
 - **Other eligible concepts:** SD-011, NoSQL data models and selection; SD-012, Object storage and blob lifecycle; SD-013, Caching fundamentals and cache policies; SD-015, Proxies, reverse proxies, and API gateways. SD-009 is next in the Level 2 storage progression.
 - **Selection rule:** Determine day number from lesson history, select one uncovered concept whose declared prerequisites are covered, and reconcile stale status metadata. Lesson delivery does not imply exercise completion.
-- **Repository status:** Day 8 lesson and curriculum/progress updates have been committed to main. Final read-back verification is required before claiming full consistency.
+- **Repository status:** Day 8 lesson, curriculum, and progress tracker are committed on main and verified by read-back. Curriculum and progress statuses agree. Changes were committed separately, not atomically.
 
 ## Lesson history
 
