@@ -1,0 +1,321 @@
+# DAY 9: Index Structures and Query Planning
+
+**Progression level:** Level 2, Storage and request-path mechanics  
+**Concept ID:** SD-009  
+**Prerequisites:** SD-008, Relational databases and transaction semantics, covered by Day 8  
+**Status:** Lesson delivered; exercises pending.
+
+### 1. Why It Exists
+
+A database can return the correct answer and still miss latency and cost objectives. Scanning a large relation, sorting millions of rows, or repeatedly fetching heap pages consumes CPU, memory, I/O, and connection-pool capacity. A query that performs well on development data can become the dominant production bottleneck as data grows.
+
+Indexes add physical structures that make rows searchable or ordered without examining every row. They are not free accelerators: they consume storage and cache, increase write work, and can be ignored when the planner estimates another plan is cheaper. Query planning matters because SQL text does not reveal whether execution uses a sequential scan, index scan, bitmap scan, sort, or join strategy. Engineers must connect the workload to the executed plan and measure the result.
+
+### 2. Core Idea
+
+An **index** is a maintained search structure associated with a table. The table remains authoritative; the index is derived state updated as rows change.
+
+A **B-tree** is PostgreSQL's general-purpose index type for equality, range predicates, ordered retrieval, and many uniqueness constraints. Composite B-tree indexes order keys by column sequence. Leading-column constraints are central to whether an index narrows the scan efficiently. A later column does not automatically make an index equally useful when the leading prefix is unconstrained.
+
+An **index scan** traverses an index and visits matching table rows. An **index-only scan** may avoid heap access when all needed values are in the index and PostgreSQL's visibility map allows it. A **bitmap scan** collects row locations and can visit heap pages with better locality. A **sequential scan** can be cheaper when a query needs a large share of a table or random heap reads would cost more than scanning.
+
+The **query planner** estimates candidate plans using table and column statistics, selectivity, row counts, correlation, cost settings, and available indexes. Estimates are not guarantees. Stale statistics, skew, correlated predicates, and parameter distributions can produce bad estimates.
+
+**Selectivity** describes how much a predicate narrows candidates. It matters, but so do required ordering, table size, cache state, row width, physical locality, and heap access. An index should be designed from a concrete access pattern: filters, join keys, ordering, limit, cardinality, and write frequency.
+
+Index lifecycle costs include:
+- Read benefit from fewer rows/pages visited or less sorting.
+- Write amplification from index maintenance on inserts and indexed-column updates.
+- Storage and cache consumption.
+- Operational work for migrations, bloat, statistics, and plan regression analysis.
+
+### 3. Mental Model
+
+Treat a query plan as a physical execution recipe and an index as one optional access path.
+
+For a newest-events query scoped to one tenant, a matching composite index can support this flow:
+
+~~~text
+Seek to the tenant's key range
+  -> find the newest qualifying tuple
+  -> walk keys in requested order
+  -> stop after LIMIT rows
+~~~
+
+This can avoid scanning and sorting the tenant's full history. Actual cost still depends on distribution, heap fetches, cache state, and planner estimates. An index does not enforce authorization, guarantee a chosen plan, or make every query faster. A warm benchmark on one tenant may misrepresent cold-cache behavior or a much larger tenant.
+
+### 4. Real-World Example
+
+Consider an event API returning at most 100 events for one tenant, ordered by creation time and unique event ID, with cursor pagination.
+
+**Documented facts:** PostgreSQL documents [index types](https://www.postgresql.org/docs/current/indexes-types.html), [multicolumn indexes](https://www.postgresql.org/docs/current/indexes-multicolumn.html), [EXPLAIN](https://www.postgresql.org/docs/current/using-explain.html), and [index-only scans](https://www.postgresql.org/docs/current/indexes-index-only-scans.html). Go's [database/sql](https://pkg.go.dev/database/sql) provides context-aware query execution and row iteration.
+
+**Established industry practice:** Derive candidate indexes from measured access patterns, inspect representative plans, and benchmark with realistic data volume and concurrent writes. Use safe migration procedures for large indexes.
+
+**Engineering inference:** An index on (tenant_id, created_at DESC, event_id DESC) is a reasonable candidate because tenant_id is an equality filter and the remaining keys provide stable ordering. Validate this hypothesis with actual data and EXPLAIN. It is not a claim about a proprietary architecture.
+
+### 5. Low-Level Design (LLD)
+
+~~~sql
+CREATE TABLE events (
+    event_id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+    tenant_id UUID NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    status TEXT NOT NULL,
+    payload JSONB NOT NULL
+);
+
+CREATE INDEX CONCURRENTLY events_tenant_recent_idx
+ON events (tenant_id, created_at DESC, event_id DESC);
+~~~
+
+The access query is:
+
+~~~sql
+SELECT event_id, created_at, status, payload
+FROM events
+WHERE tenant_id = $1
+ORDER BY created_at DESC, event_id DESC
+LIMIT $2;
+~~~
+
+The equality predicate constrains the leading key; timestamp and ID provide the requested order. event_id breaks timestamp ties, making pagination deterministic. Because payload is not indexed, heap access is still needed. Including large JSON payloads would usually impose significant storage and write costs.
+
+For continuation pages:
+
+~~~sql
+SELECT event_id, created_at, status, payload
+FROM events
+WHERE tenant_id = $1
+  AND (created_at, event_id) < ($2, $3)
+ORDER BY created_at DESC, event_id DESC
+LIMIT $4;
+~~~
+
+The cursor is the final emitted row's timestamp and ID. The exclusive tuple comparison avoids repeating that row. Offset pagination may walk and discard increasing numbers of rows; keyset pagination avoids growing offset work. Neither approach freezes the dataset across pages. A cursor must be validated and should be integrity-protected if clients must not tamper with it. It is not an authorization token. Tenant scope must come from authenticated authorization context.
+
+Inspect estimated versus actual rows, scan type, Sort nodes, rows removed by filters, buffer hits/reads, loops, and planning/execution time. EXPLAIN ANALYZE executes the statement, so use safe queries or a controlled environment when diagnosing production behavior.
+
+### 6. High-Level Design (HLD)
+
+~~~mermaid
+flowchart TD
+  Client --> API[Events API]
+  API --> Auth[Authorize tenant]
+  Auth --> Validate[Validate limit and cursor]
+  Validate --> SQL[Parameterized query]
+  SQL --> Planner[PostgreSQL planner]
+  Planner --> Index[B-tree index]
+  Planner --> Heap[Events table]
+  Index --> Executor[Executor]
+  Heap --> Executor
+  Executor --> API
+  Telemetry[Plans and query statistics] --> Review[Index review]
+  Review --> Migration[Versioned migration]
+  Migration --> Index
+~~~
+
+The API owns authorization and request validation. SQL defines filtering and ordering. The planner chooses a physical plan, and the executor reads index entries and heap tuples as required. Telemetry guides index changes through versioned migrations. Adding an index does not require another service or cache; it changes storage access paths and may trade read latency for write and storage cost.
+
+### 7. Realistic Go Code
+
+This repository method uses stable keyset pagination and only the standard library. A PostgreSQL driver must be registered by the application.
+
+~~~go
+package eventstore
+
+import (
+    "context"
+    "database/sql"
+    "errors"
+    "fmt"
+    "strings"
+    "time"
+)
+
+var ErrInvalidQuery = errors.New("invalid event query")
+
+type Event struct {
+    ID int64
+    CreatedAt time.Time
+    Status string
+    Payload []byte
+}
+
+type Cursor struct {
+    CreatedAt time.Time
+    ID int64
+}
+
+type Store struct {
+    DB *sql.DB
+}
+
+func (s Store) ListRecent(ctx context.Context, tenantID string, cursor *Cursor, limit int) ([]Event, error) {
+    if ctx == nil || s.DB == nil {
+        return nil, errors.New("context and database are required")
+    }
+    if strings.TrimSpace(tenantID) == "" || limit < 1 || limit > 100 {
+        return nil, ErrInvalidQuery
+    }
+    if cursor != nil && (cursor.CreatedAt.IsZero() || cursor.ID <= 0) {
+        return nil, ErrInvalidQuery
+    }
+
+    var rows *sql.Rows
+    var err error
+    if cursor == nil {
+        rows, err = s.DB.QueryContext(ctx,
+            "SELECT event_id, created_at, status, payload "+
+                "FROM events WHERE tenant_id = $1 "+
+                "ORDER BY created_at DESC, event_id DESC LIMIT $2",
+            tenantID, limit)
+    } else {
+        rows, err = s.DB.QueryContext(ctx,
+            "SELECT event_id, created_at, status, payload "+
+                "FROM events WHERE tenant_id = $1 "+
+                "AND (created_at, event_id) < ($2, $3) "+
+                "ORDER BY created_at DESC, event_id DESC LIMIT $4",
+            tenantID, cursor.CreatedAt, cursor.ID, limit)
+    }
+    if err != nil {
+        return nil, fmt.Errorf("query recent events: %w", err)
+    }
+    defer rows.Close()
+
+    events := make([]Event, 0, limit)
+    for rows.Next() {
+        var e Event
+        if err := rows.Scan(&e.ID, &e.CreatedAt, &e.Status, &e.Payload); err != nil {
+            return nil, fmt.Errorf("scan event: %w", err)
+        }
+        events = append(events, e)
+    }
+    if err := rows.Err(); err != nil {
+        return nil, fmt.Errorf("iterate events: %w", err)
+    }
+    return events, nil
+}
+~~~
+
+Separate first-page and continuation statements keep the access patterns explicit. Both use bound parameters, avoiding SQL interpolation. The method bounds page size, propagates cancellation, closes rows, and checks iteration errors. The caller must derive tenantID from authenticated identity, serialize the cursor safely, and set a deadline. A cursor does not provide a consistent snapshot across separate requests.
+
+### 8. Example Usage
+
+~~~go
+ctx, cancel := context.WithTimeout(request.Context(), 300*time.Millisecond)
+defer cancel()
+
+page, err := store.ListRecent(ctx, authenticatedTenantID, nil, 50)
+if err != nil {
+    return err
+}
+
+var next *eventstore.Cursor
+if len(page) > 0 {
+    last := page[len(page)-1]
+    next = &eventstore.Cursor{CreatedAt: last.CreatedAt, ID: last.ID}
+}
+_ = next
+~~~
+
+The handler serializes next into an opaque cursor and passes it on the next request. Do not emit a next cursor for an empty page. Reject invalid limits and malformed cursors before querying. Test equal timestamps to verify the ID tie-breaker, and verify that adjacent pages contain no duplicate tuple. Integration tests against PostgreSQL are needed to validate tuple comparison and actual planner behavior.
+
+### 9. Production Considerations
+
+- Measure query rate, latency distribution, rows returned, tenant cardinality, write rate, and freshness requirements.
+- Compare estimated and actual row counts, scan type, sorting, buffers, and repeated plan-node work.
+- Keep PostgreSQL statistics current. Skew and correlated predicates may need extended statistics or a different query shape.
+- Every index consumes storage and increases write maintenance. Review overlapping or apparently unused indexes against seasonal workloads and constraints.
+- CREATE INDEX CONCURRENTLY reduces blocking of ordinary writes but has caveats and cannot run inside a transaction block. Handle failed or invalid indexes and verify migration completion.
+- A selective index can still cause random heap reads; a sequential scan can win when many rows are needed.
+- Bound page sizes, request deadlines, and database concurrency. Indexes do not fix unbounded aggregation or pathological joins.
+- Tenant predicates and authorization remain mandatory; an index is not a security boundary.
+- Keyset pagination avoids large offsets but does not freeze the dataset. Define whether pages are best-effort or require a high-water mark/snapshot.
+- Track normalized query latency, calls, rows, buffer reads, timeouts, pool wait, and plan changes without high-cardinality metric labels.
+- Benchmark reads alongside inserts, updates, vacuum, and realistic tenant skew. Include storage, backups, replica replay, and migration duration in cost.
+- EXPLAIN ANALYZE executes statements. Avoid running it on mutating production queries without a safety review.
+
+### 10. Tradeoffs
+
+| Choice | Benefit | Cost or limitation | Appropriate use |
+|---|---|---|---|
+| Sequential scan | Efficient for broad reads or small tables | Work grows with relation size | Query reads a large fraction of rows |
+| B-tree | Equality, ranges, ordering, uniqueness | Storage and write maintenance | Common selective predicates |
+| Composite B-tree | Supports a specific predicate and order | Column order constrains usefulness | Equality prefix plus range/order keys |
+| Partial index | Smaller index for a subset | Query predicate must imply index predicate | Stable, frequent subset |
+| Covering index with INCLUDE | May enable index-only retrieval | More storage; visibility still matters | Narrow reads with measured heap cost |
+| BRIN | Compact for physically correlated data | Less precise than B-tree | Large append-oriented time series |
+| GIN | Efficient supported array, JSONB, or text operators | Potentially expensive writes and storage | Membership or full-text access |
+| Offset pagination | Simple page-number interface | Increasing discarded work and shifting pages | Small result sets |
+| Keyset pagination | Efficient continuation | Needs deterministic keys; no snapshot by itself | Large feeds and seek pagination |
+| More indexes | More possible access paths | Write amplification, storage, planner complexity | Each index has measured value |
+
+No index type is universally fastest. Choose based on operators, cardinality, ordering, distribution, and write workload, then verify with representative measurements.
+
+### 11. Connection to Previous Lessons
+
+Day 7, SD-007, established access patterns, keys, and constraints. Day 8, SD-008, established relational transactions and authoritative committed state. SD-009 chooses physical access paths for those known workloads. Day 3, SD-003, supplies request-rate, growth, and skew estimates; Day 4, SD-004, supplies latency objectives. No prior concept is repeated. The focus is physical indexing and plan analysis, not transaction isolation.
+
+### 12. What Comes Next
+
+**SD-010: Query Optimization and Connection Pooling**, Level 2. With index structures and plan nodes established, the next concept covers diagnosing expensive queries, improving query shape, interpreting estimates, and bounding database concurrency with connection pools. It depends on SD-008 and SD-009, covered after this lesson is persisted. This lesson does not teach SD-010.
+
+### 13. Mini Exercise
+
+An events table contains 300 million rows. A tenant with 20 million events requests the newest 50 rows, but the current plan performs a sequential scan followed by a sort.
+
+Propose a composite index and explain the key order, how it supports filtering/order/limit, what you would inspect in EXPLAIN (ANALYZE, BUFFERS), when a sequential scan may still be correct, and how the index affects inserts and storage.
+
+**Acceptance criteria:** Name a concrete index order; explain leading-column behavior and deterministic ordering; identify actual-versus-estimated rows and sort/buffer evidence; discuss write amplification. Do not provide a complete implementation.
+
+### Key Takeaways
+
+- An index is a maintained access path, not a guarantee that a query will use it.
+- Composite key order should reflect equality predicates, ranges, and requested ordering.
+- Deterministic tie-breakers make keyset pagination reliable.
+- Plans and statistics must be inspected using representative data.
+- Index-only scans depend on selected columns and visibility information.
+- Indexes trade read efficiency for write work, storage, cache pressure, and operational complexity.
+- Sequential scans can be correct for broad reads.
+- Authorization and tenant isolation are independent of indexing.
+
+### Concept Map
+
+~~~mermaid
+flowchart TD
+  A[SD-007 Data modeling] --> B[SD-008 Relational transactions]
+  B --> C[SD-009 Indexes and query planning]
+  C --> D[SD-010 Query optimization and pooling]
+  A --> E[SD-011 NoSQL models]
+  A --> F[SD-012 Object storage]
+  C --> G[Selectivity and statistics]
+  C --> H[Composite key order]
+  C --> I[Read/write tradeoffs]
+~~~
+
+### Exercise
+
+Design and benchmark a multi-tenant event-history read path.
+
+**Deliverables:** PostgreSQL schema and three representative queries; candidate indexes with key-order rationale; EXPLAIN (ANALYZE, BUFFERS) output from a controlled realistic dataset; Go benchmark or integration tests for first-page and keyset pagination; read latency and write-throughput comparisons before and after indexes; safe index migration plan; and a decision record explaining retained and rejected indexes.
+
+**Acceptance criteria:** Results remain correct, ordering is deterministic, tenant isolation is preserved, data and benchmarks are reproducible, read and write costs are reported, and each retained index maps to a measured access pattern. Pending until submitted and reviewed.
+
+### Progress
+
+- **Day:** 9, determined from the Day 1 through Day 8 lesson history on main.
+- **Progression level:** Level 2, Storage and request-path mechanics.
+- **Current concept:** SD-009, Index structures and query planning.
+- **Lesson path:** system-design/lessons/day-09-index-structures-and-query-planning.md
+- **Prerequisites satisfied:** SD-008, covered by Day 8.
+- **Mini exercise:** Pending learner submission.
+- **Substantial exercise:** Pending learner submission.
+- **Concepts covered after persistence:** SD-001 through SD-009.
+- **Next concept:** SD-010, Query optimization and connection pooling.
+- **Other eligible concepts:** SD-011, SD-012, SD-013, and SD-015.
+- **Repository update status:** Lesson, curriculum, and progress must be read back from main before claiming completion.
+
+### Most Important Mental Model
+
+**An index is a workload-specific physical access path whose value is proven by the executed plan and measured end-to-end, including the write and operational costs it adds.**
