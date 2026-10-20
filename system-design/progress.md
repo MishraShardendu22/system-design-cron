@@ -2,21 +2,21 @@
 
 ## Current state
 
-- **Current day:** 8
+- **Current day:** 9
 - **Progression level:** Level 2, Storage and request-path mechanics
-- **Current concept:** SD-008, Relational databases and transaction semantics
+- **Current concept:** SD-009, Index structures and query planning
 - **Lesson status:** Delivered and persisted on main, pending learner exercise review
 - **Mini exercise status:** Pending learner submission
 - **Substantial exercise status:** Pending learner submission
-- **Completed lessons:** Day 1, SD-001; Day 2, SD-002; Day 3, SD-003; Day 4, SD-004; Day 5, SD-005; Day 6, SD-006; Day 7, SD-007; Day 8, SD-008
-- **Concepts covered by lessons:** SD-001 through SD-008
+- **Completed lessons:** Day 1, SD-001; Day 2, SD-002; Day 3, SD-003; Day 4, SD-004; Day 5, SD-005; Day 6, SD-006; Day 7, SD-007; Day 8, SD-008; Day 9, SD-009
+- **Concepts covered by lessons:** SD-001 through SD-009
 - **Unresolved learning gaps:** No exercise submissions have been reviewed, so learner mastery remains unassessed.
-- **Repository synchronization:** Day 7 and Day 8 lesson files exist on main. SD-007 and SD-008 are marked covered. SD-009, SD-011, SD-012, SD-013, and SD-015 are eligible because their declared prerequisites are covered. SD-010 remains planned because SD-009 is not yet covered.
-- **Next recommended concept:** SD-009, Index structures and query planning
-- **Next concept prerequisites:** Satisfied. SD-009 requires SD-008, covered by Day 8.
-- **Other eligible concepts:** SD-011, NoSQL data models and selection; SD-012, Object storage and blob lifecycle; SD-013, Caching fundamentals and cache policies; SD-015, Proxies, reverse proxies, and API gateways. SD-009 is next in the Level 2 storage progression.
+- **Repository synchronization:** Day 7 through Day 9 lesson files exist on main. SD-007 through SD-009 are marked covered. SD-010, SD-011, SD-012, SD-013, and SD-015 are eligible because their declared prerequisites are covered.
+- **Next recommended concept:** SD-010, Query optimization and connection pooling
+- **Next concept prerequisites:** Satisfied. SD-010 requires SD-008 and SD-009, both covered.
+- **Other eligible concepts:** SD-011, NoSQL data models and selection; SD-012, Object storage and blob lifecycle; SD-013, Caching fundamentals and cache policies; SD-015, Proxies, reverse proxies, and API gateways.
 - **Selection rule:** Determine day number from lesson history, select one uncovered concept whose declared prerequisites are covered, and reconcile stale status metadata. Lesson delivery does not imply exercise completion.
-- **Repository status:** Day 8 lesson, curriculum, and progress tracker are committed on main and verified by read-back. Curriculum and progress statuses agree. Changes were committed separately, not atomically.
+- **Repository status:** Day 9 lesson, curriculum, and progress tracker are committed on main; final read-back verification is in progress.
 
 ## Lesson history
 
@@ -30,6 +30,7 @@
 | 6 | SD-006 | Domain boundaries and data ownership | Level 1 | Delivered | Pending | Pending |
 | 7 | SD-007 | Data modeling and access patterns | Level 1 | Delivered | Pending | Pending |
 | 8 | SD-008 | Relational databases and transaction semantics | Level 2 | Delivered | Pending | Pending |
+| 9 | SD-009 | Index structures and query planning | Level 2 | Delivered | Pending | Pending |
 
 ## Tracking rules
 
