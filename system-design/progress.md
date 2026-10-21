@@ -2,21 +2,21 @@
 
 ## Current state
 
-- **Current day:** 9
+- **Current day:** 10
 - **Progression level:** Level 2, Storage and request-path mechanics
-- **Current concept:** SD-009, Index structures and query planning
+- **Current concept:** SD-010, Query optimization and connection pooling
 - **Lesson status:** Delivered and persisted on main, pending learner exercise review
 - **Mini exercise status:** Pending learner submission
 - **Substantial exercise status:** Pending learner submission
-- **Completed lessons:** Day 1, SD-001; Day 2, SD-002; Day 3, SD-003; Day 4, SD-004; Day 5, SD-005; Day 6, SD-006; Day 7, SD-007; Day 8, SD-008; Day 9, SD-009
-- **Concepts covered by lessons:** SD-001 through SD-009
+- **Completed lessons:** Day 1, SD-001; Day 2, SD-002; Day 3, SD-003; Day 4, SD-004; Day 5, SD-005; Day 6, SD-006; Day 7, SD-007; Day 8, SD-008; Day 9, SD-009; Day 10, SD-010
+- **Concepts covered by lessons:** SD-001 through SD-010
 - **Unresolved learning gaps:** No exercise submissions have been reviewed, so learner mastery remains unassessed.
 - **Repository synchronization:** Day 7 through Day 9 lesson files exist on main. SD-007 through SD-009 are marked covered. SD-010, SD-011, SD-012, SD-013, and SD-015 are eligible because their declared prerequisites are covered.
-- **Next recommended concept:** SD-010, Query optimization and connection pooling
+- **Next recommended concept:** SD-011, NoSQL data models and selection
 - **Next concept prerequisites:** Satisfied. SD-010 requires SD-008 and SD-009, both covered.
 - **Other eligible concepts:** SD-011, NoSQL data models and selection; SD-012, Object storage and blob lifecycle; SD-013, Caching fundamentals and cache policies; SD-015, Proxies, reverse proxies, and API gateways.
 - **Selection rule:** Determine day number from lesson history, select one uncovered concept whose declared prerequisites are covered, and reconcile stale status metadata. Lesson delivery does not imply exercise completion.
-- **Repository status:** Day 9 lesson, curriculum, and progress tracker are committed on main; final read-back verification is in progress.
+- **Repository status:** Day 10 lesson and curriculum status are committed on main; progress read-back verification is pending.
 
 ## Lesson history
 
@@ -31,6 +31,7 @@
 | 7 | SD-007 | Data modeling and access patterns | Level 1 | Delivered | Pending | Pending |
 | 8 | SD-008 | Relational databases and transaction semantics | Level 2 | Delivered | Pending | Pending |
 | 9 | SD-009 | Index structures and query planning | Level 2 | Delivered | Pending | Pending |
+| 10 | SD-010 | Query optimization and connection pooling | Level 2 | Delivered | Pending | Pending |
 
 ## Tracking rules
 
