@@ -21,7 +21,7 @@ Statuses: **covered** means a lesson exists; **eligible** means all declared pre
 | SD-008 | Relational databases and transaction semantics | SD-007 | Apply constraints, isolation, transactions, and atomicity. | covered |
 | SD-009 | Index structures and query planning | SD-008 | Understand B-trees, selectivity, query plans, write amplification, and index tradeoffs. | covered |
 | SD-010 | Query optimization and connection pooling | SD-008, SD-009 | Diagnose slow queries and bound database concurrency. | covered |
-| SD-011 | NoSQL data models and selection | SD-007, SD-003 | Compare key-value, document, wide-column, and graph models against access patterns. | eligible |
+| SD-011 | NoSQL data models and selection | SD-007, SD-003 | Compare key-value, document, wide-column, and graph models against access patterns. | covered |
 | SD-012 | Object storage and blob lifecycle | SD-007 | Design large-object storage, metadata, retention, and transfer flows. | eligible |
 | SD-013 | Caching fundamentals and cache policies | SD-004, SD-007 | Choose keys, TTLs, eviction, and invalidation strategies. | eligible |
 | SD-014 | Cache consistency, stampedes, and penetration | SD-013 | Handle stale data, hot keys, miss storms, and negative caching. | planned |
@@ -34,7 +34,7 @@ Statuses: **covered** means a lesson exists; **eligible** means all declared pre
 | ID | Concept | Prerequisites | Learning objectives | Status |
 |---|---|---|---|---|
 | SD-018 | Vertical scaling, horizontal scaling, and bottleneck analysis | SD-003, SD-016 | Identify scaling limits across compute, memory, network, and storage. | planned |
-| SD-019 | Replication fundamentals | SD-008, SD-011 | Compare primary-replica and multi-writer designs, lag, and failover. | planned |
+| SD-019 | Replication fundamentals | SD-008, SD-011 | Compare primary-replica and multi-writer designs, lag, and failover. | eligible |
 | SD-020 | Consistency models and read/write guarantees | SD-019 | Distinguish linearizability, sequential, causal, and eventual consistency. | planned |
 | SD-021 | Partitioning and sharding strategies | SD-003, SD-007, SD-018 | Choose partition keys, manage skew, and reason about cross-shard operations. | planned |
 | SD-022 | Resharding and data rebalancing | SD-021 | Move partitions safely while maintaining availability. | planned |
