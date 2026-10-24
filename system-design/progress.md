@@ -2,21 +2,21 @@
 
 ## Current state
 
-- **Current day:** 11
+- **Current day:** 12
 - **Progression level:** Level 2, Storage and request-path mechanics
-- **Current concept:** SD-011, NoSQL data models and selection
+- **Current concept:** SD-012, Object storage and blob lifecycle
 - **Lesson status:** Delivered and persisted on main, pending learner exercise review
 - **Mini exercise status:** Pending learner submission
 - **Substantial exercise status:** Pending learner submission
-- **Completed lessons:** Day 1, SD-001; Day 2, SD-002; Day 3, SD-003; Day 4, SD-004; Day 5, SD-005; Day 6, SD-006; Day 7, SD-007; Day 8, SD-008; Day 9, SD-009; Day 10, SD-010; Day 11, SD-011
-- **Concepts covered by lessons:** SD-001 through SD-011
+- **Completed lessons:** Day 1, SD-001; Day 2, SD-002; Day 3, SD-003; Day 4, SD-004; Day 5, SD-005; Day 6, SD-006; Day 7, SD-007; Day 8, SD-008; Day 9, SD-009; Day 10, SD-010; Day 11, SD-011; Day 12, SD-012
+- **Concepts covered by lessons:** SD-001 through SD-012
 - **Unresolved learning gaps:** No exercise submissions have been reviewed, so learner mastery remains unassessed.
-- **Repository synchronization:** Day 1 through Day 11 lesson files exist on main. SD-001 through SD-011 are marked covered. SD-012, SD-013, SD-015, and SD-019 are eligible because their declared prerequisites are covered.
-- **Next recommended concept:** SD-012, Object storage and blob lifecycle
-- **Next concept prerequisites:** Satisfied. SD-012 requires SD-007, which is covered.
-- **Other eligible concepts:** SD-013, Caching fundamentals and cache policies; SD-015, Proxies, reverse proxies, and API gateways; SD-019, Replication fundamentals.
+- **Repository synchronization:** Day 1 through Day 12 lesson files exist on main. SD-001 through SD-012 are marked covered. SD-013, SD-015, and SD-019 are eligible because their declared prerequisites are covered.
+- **Next recommended concept:** SD-013, Caching fundamentals and cache policies
+- **Next concept prerequisites:** Satisfied. SD-013 requires SD-004 and SD-007, both covered.
+- **Other eligible concepts:** SD-015, Proxies, reverse proxies, and API gateways; SD-019, Replication fundamentals.
 - **Selection rule:** Determine day number from lesson history, select one uncovered concept whose declared prerequisites are covered, and reconcile stale status metadata. Lesson delivery does not imply exercise completion.
-- **Repository status:** Day 11 lesson, curriculum status, and progress record are committed together on main; persisted files have been read back and verified.
+- **Repository status:** Day 12 lesson, curriculum status, and progress record are committed together on main; persisted files have been read back and verified.
 
 ## Lesson history
 
@@ -33,6 +33,7 @@
 | 9 | SD-009 | Index structures and query planning | Level 2 | Delivered | Pending | Pending |
 | 10 | SD-010 | Query optimization and connection pooling | Level 2 | Delivered | Pending | Pending |
 | 11 | SD-011 | NoSQL data models and selection | Level 2 | Delivered | Pending | Pending |
+| 12 | SD-012 | Object storage and blob lifecycle | Level 2 | Delivered | Pending | Pending |
 
 ## Tracking rules
 

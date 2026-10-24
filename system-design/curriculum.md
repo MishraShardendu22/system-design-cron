@@ -22,7 +22,7 @@ Statuses: **covered** means a lesson exists; **eligible** means all declared pre
 | SD-009 | Index structures and query planning | SD-008 | Understand B-trees, selectivity, query plans, write amplification, and index tradeoffs. | covered |
 | SD-010 | Query optimization and connection pooling | SD-008, SD-009 | Diagnose slow queries and bound database concurrency. | covered |
 | SD-011 | NoSQL data models and selection | SD-007, SD-003 | Compare key-value, document, wide-column, and graph models against access patterns. | covered |
-| SD-012 | Object storage and blob lifecycle | SD-007 | Design large-object storage, metadata, retention, and transfer flows. | eligible |
+| SD-012 | Object storage and blob lifecycle | SD-007 | Design large-object storage, metadata, retention, and transfer flows. | covered |
 | SD-013 | Caching fundamentals and cache policies | SD-004, SD-007 | Choose keys, TTLs, eviction, and invalidation strategies. | eligible |
 | SD-014 | Cache consistency, stampedes, and penetration | SD-013 | Handle stale data, hot keys, miss storms, and negative caching. | planned |
 | SD-015 | Proxies, reverse proxies, and API gateways | SD-005 | Place routing, TLS termination, policy enforcement, and transformation. | eligible |
